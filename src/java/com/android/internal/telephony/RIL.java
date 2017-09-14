@@ -2682,7 +2682,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         String responceType = "other";
         if (type == RESPONSE_UNSOLICITED)
             responceType = "RESPONSE_UNSOLICITED";
-        else if (type == "RESPONSE_UNSOLICITED_ACK_EXP")
+        else if (type == RESPONSE_UNSOLICITED_ACK_EXP)
             responceType = "RESPONSE_UNSOLICITED_ACK_EXP";
 
         Rlog.v(RILJ_LOG_TAG, "Got responce type: " + responceType);
