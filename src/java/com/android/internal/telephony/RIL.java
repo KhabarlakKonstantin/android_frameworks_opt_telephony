@@ -245,7 +245,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
     // Have a separate wakelock instance for Ack
     static final String RILJ_ACK_WAKELOCK_NAME = "RILJ_ACK_WL";
     static final boolean RILJ_LOGD = true;
-    static final boolean RILJ_LOGV = false; // STOPSHIP if true
+    static final boolean RILJ_LOGV = true; // STOPSHIP if true
     static final int RADIO_SCREEN_UNSET = -1;
     static final int RADIO_SCREEN_OFF = 0;
     static final int RADIO_SCREEN_ON = 1;
@@ -702,7 +702,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
                         p.unmarshall(buffer, 0, length);
                         p.setDataPosition(0);
 
-                        //Rlog.v(RILJ_LOG_TAG, "Read packet: " + length + " bytes");
+                        Rlog.v(RILJ_LOG_TAG, "Read packet: " + length + " bytes");
+                        
 
                         processResponse(p);
                         p.recycle();
@@ -2678,6 +2679,14 @@ public class RIL extends BaseCommands implements CommandsInterface {
 
         type = p.readInt();
 
+        String responceType = "other";
+        if (type == RESPONSE_UNSOLICITED)
+            responceType = "RESPONSE_UNSOLICITED";
+        else if (type == "RESPONSE_UNSOLICITED_ACK_EXP")
+            responceType = "RESPONSE_UNSOLICITED_ACK_EXP";
+
+        Rlog.v(RILJ_LOG_TAG, "Got responce type: " + responceType);
+
         if (type == RESPONSE_UNSOLICITED || type == RESPONSE_UNSOLICITED_ACK_EXP) {
             processUnsolicited (p, type);
         } else if (type == RESPONSE_SOLICITED || type == RESPONSE_SOLICITED_ACK_EXP) {
@@ -3160,6 +3169,8 @@ public class RIL extends BaseCommands implements CommandsInterface {
 
         response = p.readInt();
 
+        Rlog.v(RILJ_LOG_TAG, "Got responce in processUnsolicited: " + response);
+
         // Follow new symantics of sending an Ack starting from RIL version 13
         if (getRilVersion() >= 13 && type == RESPONSE_UNSOLICITED_ACK_EXP) {
             Message msg;
@@ -3171,6 +3182,154 @@ public class RIL extends BaseCommands implements CommandsInterface {
                 riljLog("Unsol response received for " + responseToString(response) +
                         " Sending ack to ril.cpp");
             }
+        }
+
+        
+            switch (response) {
+        case RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED");
+            break;
+        case RIL_UNSOL_RESPONSE_CALL_STATE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_CALL_STATE_CHANGED");
+            break;
+        case RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_VOICE_NETWORK_STATE_CHANGED");
+            break;
+        case RIL_UNSOL_RESPONSE_NEW_SMS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_NEW_SMS");
+            break;
+        case RIL_UNSOL_RESPONSE_NEW_SMS_STATUS_REPORT:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_NEW_SMS_STATUS_REPORT");
+            break;
+        case RIL_UNSOL_RESPONSE_NEW_SMS_ON_SIM:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_NEW_SMS_ON_SIM");
+            break;
+        case RIL_UNSOL_ON_USSD:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_ON_USSD");
+            break;
+        case RIL_UNSOL_NITZ_TIME_RECEIVED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_NITZ_TIME_RECEIVED");
+            break;
+        case RIL_UNSOL_SIGNAL_STRENGTH:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_SIGNAL_STRENGTH");
+            break;
+        case RIL_UNSOL_DATA_CALL_LIST_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_DATA_CALL_LIST_CHANGED");
+            break;
+        case RIL_UNSOL_SUPP_SVC_NOTIFICATION:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_SUPP_SVC_NOTIFICATION");
+            break;
+        case RIL_UNSOL_STK_SESSION_END:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_STK_SESSION_END");
+            break;
+        case RIL_UNSOL_STK_PROACTIVE_COMMAND:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_STK_PROACTIVE_COMMAND");
+            break;
+        case RIL_UNSOL_STK_EVENT_NOTIFY:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_STK_EVENT_NOTIFY");
+            break;
+        case RIL_UNSOL_STK_CALL_SETUP:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_STK_CALL_SETUP");
+            break;
+        case RIL_UNSOL_SIM_SMS_STORAGE_FULL:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_SIM_SMS_STORAGE_FULL");
+            break;
+        case RIL_UNSOL_SIM_REFRESH:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_SIM_REFRESH");
+            break;
+        case RIL_UNSOL_CALL_RING:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CALL_RING");
+            break;
+        case RIL_UNSOL_RESTRICTED_STATE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESTRICTED_STATE_CHANGED");
+            break;
+        case RIL_UNSOL_RESPONSE_SIM_STATUS_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_SIM_STATUS_CHANGED");
+            break;
+        case RIL_UNSOL_RESPONSE_CDMA_NEW_SMS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_CDMA_NEW_SMS");
+            break;
+        case RIL_UNSOL_RESPONSE_NEW_BROADCAST_SMS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_NEW_BROADCAST_SMS");
+            break;
+        case RIL_UNSOL_CDMA_RUIM_SMS_STORAGE_FULL:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CDMA_RUIM_SMS_STORAGE_FULL");
+            break;
+        case RIL_UNSOL_ENTER_EMERGENCY_CALLBACK_MODE:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_ENTER_EMERGENCY_CALLBACK_MODE");
+            break;
+        case RIL_UNSOL_CDMA_CALL_WAITING:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CDMA_CALL_WAITING");
+            break;
+        case RIL_UNSOL_CDMA_OTA_PROVISION_STATUS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CDMA_OTA_PROVISION_STATUS");
+            break;
+        case RIL_UNSOL_CDMA_INFO_REC:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CDMA_INFO_REC");
+            break;
+        case RIL_UNSOL_OEM_HOOK_RAW:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_OEM_HOOK_RAW");
+            break;
+        case RIL_UNSOL_RINGBACK_TONE:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RINGBACK_TONE");
+            break;
+        case RIL_UNSOL_RESEND_INCALL_MUTE:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESEND_INCALL_MUTE");
+            break;
+        case RIL_UNSOL_CDMA_SUBSCRIPTION_SOURCE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CDMA_SUBSCRIPTION_SOURCE_CHANGED");
+            break;
+        case RIL_UNSOl_CDMA_PRL_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOl_CDMA_PRL_CHANGED");
+            break;
+        case RIL_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE");
+            break;
+        case RIL_UNSOL_RIL_CONNECTED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RIL_CONNECTED");
+            break;
+        case RIL_UNSOL_VOICE_RADIO_TECH_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_VOICE_RADIO_TECH_CHANGED");
+            break;
+        case RIL_UNSOL_CELL_INFO_LIST:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_CELL_INFO_LIST");
+            break;
+        case RIL_UNSOL_RESPONSE_IMS_NETWORK_STATE_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_IMS_NETWORK_STATE_CHANGED");
+            break;
+        case RIL_UNSOL_UICC_SUBSCRIPTION_STATUS_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_UICC_SUBSCRIPTION_STATUS_CHANGED");
+            break;
+        case RIL_UNSOL_SRVCC_STATE_NOTIFY:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_SRVCC_STATE_NOTIFY");
+            break;
+        case RIL_UNSOL_HARDWARE_CONFIG_CHANGED:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_HARDWARE_CONFIG_CHANGED");
+            break;
+        case RIL_UNSOL_RADIO_CAPABILITY:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RADIO_CAPABILITY");
+            break;
+        case RIL_UNSOL_ON_SS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_ON_SS");
+            break;
+        case RIL_UNSOL_STK_CC_ALPHA_NOTIFY:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_STK_CC_ALPHA_NOTIFY");
+            break;
+        case RIL_UNSOL_LCEDATA_RECV:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_LCEDATA_RECV");
+            break;
+        case RIL_UNSOL_PCO_DATA:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_PCO_DATA");
+            break;
+        case RIL_UNSOL_RESPONSE_ADN_RECORDS:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_ADN_RECORDS");
+            break;
+        case RIL_UNSOL_RESPONSE_ADN_INIT_DONE:
+            Rlog.v(RILJ_LOG_TAG, "Got: RIL_UNSOL_RESPONSE_ADN_INIT_DONE");
+            break;
+
+        default:
+            break;
         }
 
         try {switch(response) {
@@ -3237,6 +3396,9 @@ public class RIL extends BaseCommands implements CommandsInterface {
                 "Exception:" + tr.toString());
             return;
         }
+
+        if (ret == null)
+            Rlog.v(RILJ_LOG_TAG, "Got void responce");
 
         switch(response) {
             case RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED:
